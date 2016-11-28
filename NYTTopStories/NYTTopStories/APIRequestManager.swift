@@ -2,27 +2,28 @@
 //  APIRequestManager.swift
 //  NYTTopStories
 //
-//  Created by Tong Lin on 11/20/16.
+//  Created by Tong Lin on 11/22/16.
 //  Copyright © 2016 Tong Lin. All rights reserved.
 //
 
 import Foundation
 
-internal class APIRequestManager{
-    internal static let manager = APIRequestManager()
-    init() {}
+class APIRequestManager {
     
-    func getData(urlString: String, callback: @escaping (Data) -> () ) {
-        guard let url = URL(string: urlString) else { return }
+    static let manager = APIRequestManager()
+    private init() {}
+    
+    func getData(endPoint: String, callback: @escaping (Data?) -> Void) {
+        guard let myURL = URL(string: endPoint) else { return }
         let session = URLSession(configuration: URLSessionConfiguration.default)
-        session.dataTask(with: url) { (data: Data?, _, error: Error?) in
-            if error != nil{
-                print(error!)
+        
+        session.dataTask(with: myURL) { (data: Data?, response: URLResponse?, error: Error?) in
+            if error != nil {
+                print("Error durring session: \(error)")
             }
-            if data != nil{
-                callback(data!)
-            }
-        }.resume()
+            guard let validData = data else { return }
+            
+            callback(validData)
+            }.resume()
     }
-    
 }
